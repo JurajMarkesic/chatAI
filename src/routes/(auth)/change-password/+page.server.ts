@@ -1,11 +1,11 @@
-import { invalid, type ValidationError } from '@sveltejs/kit';
+import { fail, type ActionFailure } from '@sveltejs/kit';
 import { getSupabase } from '@supabase/auth-helpers-sveltekit';
 import { AuthApiError } from '@supabase/supabase-js';
 import type { Actions } from './$types';
 import { z } from 'zod';
 
 export const actions: Actions = {
-	async default(event): Promise<ValidationError<{ error: string; errors? }> | { message: string }> {
+	async default(event): Promise<ActionFailure<{ error: string; errors? }> | { message: string }> {
 		const { supabaseClient } = await getSupabase(event);
 		const { request } = event;
 		const formData = await request.formData();
@@ -19,7 +19,7 @@ export const actions: Actions = {
 		const validatedData = credentials.safeParse(Object.fromEntries(formData));
 
 		if (!validatedData.success) {
-			return invalid(400, {
+			return fail(400, {
 				error: 'Password must be at least 6 characters.',
 				errors: validatedData.error.flatten().fieldErrors,
 			});
@@ -31,11 +31,11 @@ export const actions: Actions = {
 
 		if (error) {
 			if (error instanceof AuthApiError && error.status === 400) {
-				return invalid(400, {
+				return fail(400, {
 					error: 'Invalid credentials.',
 				});
 			}
-			return invalid(500, {
+			return fail(500, {
 				error: 'Server error. Try again later.',
 			});
 		}

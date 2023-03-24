@@ -1,4 +1,4 @@
-import { invalid, type ValidationError } from '@sveltejs/kit';
+import { fail, type ActionFailure } from '@sveltejs/kit';
 import { getSupabase } from '@supabase/auth-helpers-sveltekit';
 import { AuthApiError } from '@supabase/supabase-js';
 import type { Actions } from './$types';
@@ -8,7 +8,7 @@ export const actions: Actions = {
 	async default(
 		event
 	): Promise<
-		ValidationError<{ error: string; errors?; values: { email: string } }> | { message: string }
+		ActionFailure<{ error: string; errors?; values: { email: string } }> | { message: string }
 	> {
 		const { request } = event;
 		const { supabaseClient } = await getSupabase(event);
@@ -24,7 +24,7 @@ export const actions: Actions = {
 		const validatedData = credentials.safeParse(Object.fromEntries(formData));
 
 		if (!validatedData.success) {
-			return invalid(400, {
+			return fail(400, {
 				error: 'Please enter a valid email.',
 				errors: validatedData.error.flatten().fieldErrors,
 				values: {
@@ -37,14 +37,14 @@ export const actions: Actions = {
 
 		if (error) {
 			if (error instanceof AuthApiError && error.status === 400) {
-				return invalid(400, {
+				return fail(400, {
 					error: 'Invalid credentials.',
 					values: {
 						email: formData.get('email') as string,
 					},
 				});
 			}
-			return invalid(500, {
+			return fail(500, {
 				error: 'Server error. Try again later.',
 				values: {
 					email: formData.get('email') as string,

@@ -1,15 +1,14 @@
-import { fail, type ActionFailure } from '@sveltejs/kit';
+import { fail, redirect, type ActionFailure } from '@sveltejs/kit';
 import { getSupabase } from '@supabase/auth-helpers-sveltekit';
 import { AuthApiError } from '@supabase/supabase-js';
 import type { Actions } from './$types';
+import { Configuration, OpenAIApi } from 'openai';
 import { z } from 'zod';
 
 export const actions: Actions = {
-	async default(
-		event
-	): Promise<ActionFailure<{ error: string; values; errors? }> | { message: string }> {
+	async default(event): Promise<ActionFailure<{ error: string; values; errors? }>> {
 		const { supabaseClient } = await getSupabase(event);
-		const { request, url } = event;
+		const { request } = event;
 		const formData = await request.formData();
 
 		const credentials = z.object({
@@ -33,17 +32,13 @@ export const actions: Actions = {
 			});
 		}
 
-		// attempt to register
-		const { error } = await supabaseClient.auth.signUp({
-			email: validatedData.data.email,
-			password: validatedData.data.password,
-			options: { emailRedirectTo: url.origin },
-		});
+		// attempt to log in
+		const { error } = await supabaseClient.auth.signInWithPassword(validatedData.data);
 
 		if (error) {
 			if (error instanceof AuthApiError && error.status === 400) {
 				return fail(400, {
-					error: 'Invalid credentials.',
+					error: 'Incorrect credentials.',
 					values: {
 						email: formData.get('email') as string,
 					},
@@ -58,8 +53,7 @@ export const actions: Actions = {
 			});
 		}
 
-		return {
-			message: 'Please check your email for a magic link to log into the website.',
-		};
+		// successfully logged in - redirect to homepage
+		throw redirect(307, '/');
 	},
 };
