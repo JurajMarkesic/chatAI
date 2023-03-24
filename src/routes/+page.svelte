@@ -1,10 +1,13 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import type { PageData } from './$types';
 	import { MetaTags } from 'svelte-meta-tags';
 	import meta from '$lib/stores/meta';
 
 	import Button from '$lib/components/ui/Button.svelte';
 	import Waiting from '$lib/components/ui/icons/Waiting.svelte';
+
+	let textareaHeight = 0;
 
 	let isGenerating = false;
 
@@ -25,7 +28,7 @@
 
 <form>
 	<div class="flex flex-col w-full py-2 flex-grow md:py-3 md:pl-4 relative border border-black/10 bg-white rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)]">
-		<textarea tabindex="0" style="max-height: 200px; height: 168px; overflow-y: hidden;" rows="1" class="m-0 w-full resize-none border-0 bg-transparent p-0 pr-7 focus:ring-0 focus-visible:ring-0 pl-2 md:pl-0"></textarea>
+		<textarea tabindex="0" style="max-height: 200px; height: {textareaHeight}px; overflow-y: hidden;" rows="1" class="m-0 w-full resize-none border-0 bg-transparent p-0 pr-7 focus:ring-0 focus-visible:ring-0 pl-2 md:pl-0"></textarea>
 		{#if isGenerating}
 			<Button type="submit" classes="absolute p-1 rounded-md bottom-1.5 md:bottom-2.5 hover:bg-gray-100 disabled:hover:bg-transparent right-1 md:right-2">
 				<div class="text-2xl">
