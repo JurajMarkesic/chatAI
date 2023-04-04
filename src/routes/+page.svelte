@@ -23,12 +23,27 @@
 	$: charactersPerLine = isMobile ? 70 : 165;
 	$: textareaHeight = 50 + Math.floor(currentPrompt.length / charactersPerLine) * 30;
 
+	let messages: { content: string; role: string }[] = [];
+
 	const handleSubmit: SubmitFunction = () => {
 		isGenerating = true;
 
+		messages.push({
+			content: currentPrompt,
+			role: 'user',
+		});
+		messages = messages;
+
+		currentPrompt = '';
+
 		return async ({ result }) => {
 			isGenerating = false;
-			await applyAction(result);
+			// await applyAction(result);
+
+			if (result.status === 200 && result.data) {
+				messages.push(result.data[0].message);
+				messages = messages;
+			}
 		};
 	};
 </script>
@@ -44,6 +59,16 @@
 	/>
 </div>
 <p class="tailwind-demo text-center text-2xl font-semibold">Welcome to T3 SvelteKit</p>
+
+<div class="text-center text-2xl font-semibold">
+	{#each messages as message}
+		{#if message.role === 'user'}
+			<p class="text-emerald-700">| {message.content}</p>
+		{:else if message.role === 'assistant'}
+			<p class="text-blue-800">| {message.content}</p>
+		{/if}
+	{/each}
+</div>
 
 <form method="post" use:enhance={handleSubmit}>
 	<div

@@ -2,11 +2,15 @@ import { fail, type ActionFailure } from '@sveltejs/kit';
 import { getSupabase } from '@supabase/auth-helpers-sveltekit';
 import { SECRET_OPENAI_KEY } from '$env/static/private';
 import type { Actions } from './$types';
-import { Configuration, OpenAIApi } from 'openai';
+import { Configuration, OpenAIApi, type CreateChatCompletionResponseChoicesInner } from 'openai';
 import { z } from 'zod';
 
 export const actions: Actions = {
-	async default(event) {
+	async default(
+		event
+	): Promise<
+		ActionFailure<{ error: string; values? }> | CreateChatCompletionResponseChoicesInner[]
+	> {
 		const { supabaseClient } = await getSupabase(event);
 		const { request } = event;
 		const formData = await request.formData();
@@ -38,8 +42,17 @@ export const actions: Actions = {
 				model: 'gpt-3.5-turbo',
 				messages: [{ role: 'user', content: formData.get('prompt') as string }],
 			});
-			console.log('aaa', response.data.choices);
-			// return response;
+
+			if (!response.data) {
+				return fail(500, {
+					error: 'Something went wrong. Try again later.',
+					values: {
+						prompt: formData.get('prompt') as string,
+					},
+				});
+			}
+
+			return response.data.choices;
 		} catch (error) {
 			console.log('error', error);
 			return fail(500, {
