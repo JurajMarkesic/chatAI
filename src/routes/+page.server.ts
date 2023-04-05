@@ -66,6 +66,7 @@ export const actions: Actions = {
 					},
 				});
 			}
+			console.log('aaa', response.data.usage);
 
 			return response.data.choices;
 		} catch (error) {
