@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { applyAction, enhance, type SubmitFunction } from '$app/forms';
-	import type { PageData, ActionData } from './$types';
+	import { applyAction, deserialize } from '$app/forms';
+	import { invalidateAll } from '$app/navigation';
+	import type { PageData } from './$types';
 	import { MetaTags } from 'svelte-meta-tags';
 	import meta from '$lib/stores/meta';
 
@@ -9,7 +10,6 @@
 	import Waiting from '$lib/components/ui/icons/Waiting.svelte';
 
 	export let data: PageData;
-	export let form: ActionData;
 
 	let isMobile = false;
 	let isGenerating = false;
@@ -25,9 +25,8 @@
 
 	let messages: { content: string; role: string }[] = [];
 
-	const handleSubmit: SubmitFunction = () => {
+	async function handleSubmit(event) {
 		isGenerating = true;
-
 		messages.push({
 			content: currentPrompt,
 			role: 'user',
@@ -36,16 +35,32 @@
 
 		currentPrompt = '';
 
-		return async ({ result }) => {
-			isGenerating = false;
-			// await applyAction(result);
+		let data = new FormData();
+		data.set('messages', JSON.stringify(messages));
 
-			if (result.status === 200 && result.data) {
-				messages.push(result.data[0].message);
-				messages = messages;
-			}
-		};
-	};
+		const response = await fetch(this.action, {
+			method: 'POST',
+			body: data,
+			headers: {
+				'x-sveltekit-action': 'true',
+			},
+		});
+		/** @type {import('@sveltejs/kit').ActionResult} */
+		const result = deserialize(await response.text());
+
+		isGenerating = false;
+
+		if (result.status === 200 && result.data) {
+			messages.push(result.data[0].message);
+			messages = messages;
+		}
+		// if (result.type === 'success') {
+		// 	// re-run all `load` functions, following the successful update
+		// 	await invalidateAll();
+		// }
+
+		// applyAction(result);
+	}
 </script>
 
 <MetaTags title="Home" description="Home Description." {...meta} />
@@ -70,7 +85,7 @@
 	{/each}
 </div>
 
-<form method="post" use:enhance={handleSubmit}>
+<form method="post" on:submit|preventDefault={handleSubmit}>
 	<div
 		class="relative flex w-full flex-grow flex-col rounded-md border border-black/10 bg-white py-2 shadow-[0_0_10px_rgba(0,0,0,0.10)] md:py-3 md:pl-4"
 	>
