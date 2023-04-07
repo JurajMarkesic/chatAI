@@ -79,48 +79,56 @@
 	{/each}
 </div>
 
-<form method="post" on:submit|preventDefault={handleSubmit} class="mb-24">
-	<div
-		class="relative flex w-full flex-grow flex-col rounded-md border border-black/10 bg-white py-2 shadow-[0_0_10px_rgba(0,0,0,0.10)] md:py-3 md:pl-4"
-	>
-		<textarea
-			tabindex="0"
-			style="max-height: 200px; height: {textareaHeight}px; overflow-y: hidden;"
-			rows="1"
-			class="m-0 w-full resize-none border-0 bg-transparent p-0 pr-7 pl-2 focus:ring-0 focus-visible:ring-0 md:pl-0"
-			name="prompt"
-			bind:value={currentPrompt}
-		/>
-		{#if isGenerating}
-			<Button
-				type="submit"
-				classes="absolute p-1 rounded-md bottom-1.5 md:bottom-2.5 hover:bg-gray-100 disabled:hover:bg-transparent right-1 md:right-2"
-			>
-				<div class="text-2xl">
-					<Waiting />
-				</div>
-			</Button>
-		{:else}
-			<Button
-				type="submit"
-				classes="absolute p-1 rounded-md bottom-1.5 md:bottom-2.5 hover:bg-gray-100 disabled:hover:bg-transparent disabled:bottom-0.5 md:disabled:bottom-1 right-1 md:right-2"
-			>
-				<svg
-					stroke="currentColor"
-					fill="none"
-					stroke-width="2"
-					viewBox="0 0 24 24"
-					stroke-linecap="round"
-					stroke-linejoin="round"
-					class="mr-1 h-4 w-4"
-					height="1em"
-					width="1em"
-					xmlns="http://www.w3.org/2000/svg"
+
+<div class="mb-2">
+	<form method="post" on:submit|preventDefault={handleSubmit}>
+		<div
+			class="relative flex w-full flex-grow flex-col rounded-md border border-black/10 bg-white py-2 shadow-[0_0_10px_rgba(0,0,0,0.10)] md:py-3 md:pl-4"
+		>
+			<textarea
+				tabindex="0"
+				style="max-height: 200px; height: {textareaHeight}px; overflow-y: hidden;"
+				rows="1"
+				class="m-0 w-full resize-none border-0 bg-transparent p-0 pr-7 pl-2 focus:ring-0 focus-visible:ring-0 md:pl-0"
+				name="prompt"
+				bind:value={currentPrompt}
+			/>
+			{#if isGenerating}
+				<Button
+					type="submit"
+					classes="absolute p-1 rounded-md bottom-1.5 md:bottom-2.5 hover:bg-gray-100 disabled:hover:bg-transparent right-1 md:right-2"
 				>
-					<line x1="22" y1="2" x2="11" y2="13" />
-					<polygon points="22 2 15 22 11 13 2 9 22 2" />
-				</svg>
-			</Button>
-		{/if}
+					<div class="text-2xl">
+						<Waiting />
+					</div>
+				</Button>
+			{:else}
+				<Button
+					type="submit"
+					classes="absolute p-1 rounded-md bottom-1.5 md:bottom-2.5 hover:bg-gray-100 disabled:hover:bg-transparent disabled:bottom-0.5 md:disabled:bottom-1 right-1 md:right-2"
+				>
+					<svg
+						stroke="currentColor"
+						fill="none"
+						stroke-width="2"
+						viewBox="0 0 24 24"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						class="mr-1 h-4 w-4"
+						height="1em"
+						width="1em"
+						xmlns="http://www.w3.org/2000/svg"
+					>
+						<line x1="22" y1="2" x2="11" y2="13" />
+						<polygon points="22 2 15 22 11 13 2 9 22 2" />
+					</svg>
+				</Button>
+			{/if}
+		</div>
+	</form>
+
+	<div class="px-3 pt-2 pb-3 text-center text-sm text-zinc-400 md:px-4">
+		Chat AI omogućio <a href="https://had.hr" target="_blank" rel="noreferrer" class="text-emerald-400 font-bold">had.hr</a>
 	</div>
-</form>
+
+</div>
