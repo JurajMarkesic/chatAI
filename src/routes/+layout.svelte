@@ -20,14 +20,10 @@
 </script>
 
 <div class="flex min-h-screen flex-col justify-between">
-	<div class="wrapper">
-		<SiteHeader />
-		<main>
-			<div class="container">
-				<slot />
-			</div>
-		</main>
-	</div>
-
-	<SiteFooter />
+	<SiteHeader />
+	<main>
+		<div class="container max-w-2xl">
+			<slot />
+		</div>
+	</main>
 </div>

@@ -65,27 +65,21 @@
 
 <MetaTags title="Home" description="Home Description." {...meta} />
 
-<div class="pt-8" />
-<div class="flex justify-center">
-	<img
-		src="https://user-images.githubusercontent.com/43737355/189502485-be99e3ce-272b-49a9-abe8-5496238dfbb3.png"
-		alt="T3-SvelteKit"
-		class=" text-center"
-	/>
-</div>
-<p class="tailwind-demo text-center text-2xl font-semibold">Welcome to T3 SvelteKit</p>
-
-<div class="text-center text-2xl font-semibold">
+<div class="mb-24">
 	{#each messages as message}
 		{#if message.role === 'user'}
-			<p class="text-emerald-700">| {message.content}</p>
+			<div class="bg-amber-200 rounded-lg shadow-md px-5 py-4 flex focus:outline-none mt-16 mr-20">
+				{message.content}
+			</div>
 		{:else if message.role === 'assistant'}
-			<p class="text-blue-800">| {message.content}</p>
+			<div class="bg-emerald-300 rounded-lg shadow-md px-5 py-4 flex focus:outline-none mt-16 ml-20">
+				{message.content}
+			</div>
 		{/if}
 	{/each}
 </div>
 
-<form method="post" on:submit|preventDefault={handleSubmit}>
+<form method="post" on:submit|preventDefault={handleSubmit} class="mb-24">
 	<div
 		class="relative flex w-full flex-grow flex-col rounded-md border border-black/10 bg-white py-2 shadow-[0_0_10px_rgba(0,0,0,0.10)] md:py-3 md:pl-4"
 	>
@@ -130,10 +124,3 @@
 		{/if}
 	</div>
 </form>
-
-{#if !data.session?.user}
-	<h1>I am not logged in</h1>
-{:else}
-	<h1>Welcome {data.session?.user.email}</h1>
-	<p>I am logged in!</p>
-{/if}
